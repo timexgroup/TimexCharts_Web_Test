@@ -15,7 +15,7 @@ export {
   StepCountInterval,
   StepCountBarChart,
   // SleepQualityBarChart,
-},
+};
 
 // Export both classes for use in other scripts
 // if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
