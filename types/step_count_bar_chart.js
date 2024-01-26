@@ -1,7 +1,7 @@
 import { TimeDisplayFormat } from './time_display_format.js';
 import { TimeInterval } from './time_interval.js';
 
-export class StepCountBarChart {
+class StepCountBarChart {
 
     constructor(ctx) {
         this.ctx = ctx;
