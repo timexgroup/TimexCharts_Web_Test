@@ -1,5 +1,5 @@
-import { TimeDisplayFormat } from './timedisplayformat.js';
-import { TimeInterval } from './timeinterval.js';
+import { TimeDisplayFormat } from './time_display_format.js';
+import { TimeInterval } from './time_interval.js';
 
 export class StepCountBarChart {
 
