@@ -1,7 +1,7 @@
-import * from './types/TimeInterval.js';
-import * from './types/TimeDisplayFormat.js';
-import * from './types/StepCountInterval.js';
-import * from './types/StepCountBarChart.js';
+export * from './types/TimeInterval.js';
+export * from './types/TimeDisplayFormat.js';
+export * from './types/StepCountInterval.js';
+export * from './types/StepCountBarChart.js';
 
 import * as TimeInterval from './types/TimeInterval.js';
 import * as TimeDisplayFormat from './types/TimeDisplayFormat.js';
