@@ -1,24 +1,29 @@
-import { TimeInterval } as controllers from './types/TimeInterval.js';
-import { TimeDisplayFormat } as controllers from './types/TimeDisplayFormat.js';
-import { StepCountInterval } as controllers from './types/StepCountInterval.js';
-import { StepCountBarChart } as controllers from './types/StepCountBarChart.js';
+import * from './types/TimeInterval.js';
+import * from './types/TimeDisplayFormat.js';
+import * from './types/StepCountInterval.js';
+import * from './types/StepCountBarChart.js';
+
+import * as TimeInterval from './types/TimeInterval.js';
+import * as TimeDisplayFormat from './types/TimeDisplayFormat.js';
+import * as StepCountInterval from './types/StepCountInterval.js';
+import * as StepCountBarChart from './types/StepCountBarChart.js';
 // import { SleepQualityBarChart } as controllers from './types/SleepQualityBarChart.js';
 
-// export {
-//   TimeInterval,
-//   TimeDisplayFormat,
-//   StepCountInterval,
-//   StepCountBarChart,
-//   SleepQualityBarChart,
-// },
+export {
+  TimeInterval,
+  TimeDisplayFormat,
+  StepCountInterval,
+  StepCountBarChart,
+  // SleepQualityBarChart,
+},
 
 // Export both classes for use in other scripts
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = { TimeInterval, TimeDisplayFormat, StepCountInterval, StepCountBarChart };
-} else {
-    window.TimeInterval = TimeInterval;
-    window.TimeDisplayFormat = TimeDisplayFormat;
-    window.StepCountInterval = StepCountInterval;
-    window.StepCountBarChart = StepCountBarChart;
-    // window.SleepQualityBarChart = SleepQualityBarChart;
-}
+// if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+//     module.exports = { TimeInterval, TimeDisplayFormat, StepCountInterval, StepCountBarChart };
+// } else {
+//     window.TimeInterval = TimeInterval;
+//     window.TimeDisplayFormat = TimeDisplayFormat;
+//     window.StepCountInterval = StepCountInterval;
+//     window.StepCountBarChart = StepCountBarChart;
+//     // window.SleepQualityBarChart = SleepQualityBarChart;
+// }
