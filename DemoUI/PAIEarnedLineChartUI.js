@@ -1,6 +1,6 @@
-export class TileHeartRateLineChartUI {
-	constructor(heartRateChart) {
-		this.heartRateChart = heartRateChart;
+export class PAIEarnedLineChartUI {
+	constructor(paiEarnedLineChart) {
+		this.paiEarnedLineChart = paiEarnedLineChart;
 		this.updateList();
 	}
 
@@ -17,6 +17,12 @@ export class TileHeartRateLineChartUI {
 		document.getElementById('addTextDataButton').addEventListener('click', () => this.addTextData());
 		document.getElementById('setMaxValueButton').addEventListener('click', () => this.setMaxValueClick());
 		document.getElementById('setThresholdButton').addEventListener('click', () => this.setThresholdsClick());
+		document.getElementById('applyFormatButton').addEventListener('click', () => this.setFormatClick());
+		document.getElementById('moveLineButton').addEventListener('click', () => this.moveLineClick());
+		document.getElementById('nowTimeToggle').addEventListener('change', () => this.timeLineIndicatorToggle());
+		document
+			.getElementById('changeLineIndicatorButton')
+			.addEventListener('click', () => this.changeLineIndicatorTextClick());
 		document.getElementById('addHRButton').addEventListener('click', () => this.addIntervalData());
 		document
 			.getElementById('changeConnectDurationButton')
@@ -28,29 +34,32 @@ export class TileHeartRateLineChartUI {
 
 	setInitialElementValues() {
 		// Load default values to elements
-		document.getElementById('connectDurationInput').value = this.heartRateChart.connectDuration;
-		document.getElementById('connectAllPointsToggle').checked = this.heartRateChart.connectAllPoints;
+		document.getElementById('timeFormat').value = this.paiEarnedLineChart.hourFormat ? '12HR' : '24HR';
+		document.getElementById('connectDurationInput').value = this.paiEarnedLineChart.connectDuration;
+		document.getElementById('connectAllPointsToggle').checked = this.paiEarnedLineChart.connectAllPoints;
+		document.getElementById('nowTimeToggle').checked = this.paiEarnedLineChart.lineIndicator;
+		document.getElementById('lineIndicatorInput').value = this.paiEarnedLineChart.lineIndicatorText;
 	}
 
+	/* ADD DATA FUNCTIONS HERE */
 	addData() {
-		console.log('passing data...');
 		const hrInput = document.getElementById('hr').value.trim();
 		const timeInput = document.getElementById('time').value.trim();
-
+		console.log(timeInput);
 		if (hrInput === '' || timeInput === '') {
 			alert('Please enter correct values.');
-		} else if (parseInt(hrInput) > this.heartRateChart.thresholds.MAX) {
+		} else if (parseInt(hrInput) > this.paiEarnedLineChart.thresholds.MAX) {
 			alert('Input exceeds max value. Please enter correct values.');
-		} else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
+		} else if (parseInt(hrInput) < this.paiEarnedLineChart.thresholds.MIN) {
 			alert('Input is below minimum value. Please enter correct values.');
 		} else {
 			const newData = {
 				hr: hrInput,
 				time: timeInput,
 			};
-			
+			console.log('passing data...');
 			console.log(newData);
-			this.heartRateChart.addData(newData);
+			this.paiEarnedLineChart.addData(newData);
 			// Reset input values
 			document.getElementById('hr').value = '';
 			document.getElementById('time').value = '';
@@ -73,7 +82,7 @@ export class TileHeartRateLineChartUI {
 				const time = timeStr;
 				parsedData.push({ hr: value, time: time });
 			});
-			this.heartRateChart.addMultipleData(parsedData);
+			this.paiEarnedLineChart.addMultipleData(parsedData);
 			this.updateList();
 		}
 	}
@@ -84,16 +93,17 @@ export class TileHeartRateLineChartUI {
 
 		if (hrInput === '' || intervalValue === '') {
 			alert('Please enter correct values.');
-		} else if (parseInt(hrInput) > this.heartRateChart.thresholds.MAX) {
+		} else if (parseInt(hrInput) > this.paiEarnedLineChart.thresholds.MAX) {
 			alert('Input exceeds max value. Please enter correct values.');
-		} else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
+		} else if (parseInt(hrInput) < this.paiEarnedLineChart.thresholds.MIN) {
 			alert('Input is below minimum value. Please enter correct values.');
 		} else {
 			const startDate = new Date('2024-01-01T00:00:00');
-			// If heartRateData has values, use the last time as the starting point
+
+			// If paiEarnedData has values, use the last time as the starting point
 			const lastTime =
-				this.heartRateChart.heartRateData.length > 0
-					? this.heartRateChart.heartRateData[this.heartRateChart.heartRateData.length - 1].time
+				this.paiEarnedLineChart.paiEarnedData.length > 0
+					? this.paiEarnedLineChart.paiEarnedData[this.paiEarnedLineChart.paiEarnedData.length - 1].time
 					: startDate;
 
 			// Increment time based on the interval
@@ -104,35 +114,35 @@ export class TileHeartRateLineChartUI {
 				time: newTime,
 			};
 
-			this.heartRateChart.addData(newData);
+			this.paiEarnedLineChart.addData(newData);
 			this.updateList();
 		}
 	}
 
 	deleteDataClick(index) {
-		this.heartRateChart.deleteData(index);
+		this.paiEarnedLineChart.deleteData(index);
 		this.updateList();
 	}
 
 	updateList() {
-		const heartRateList = document.getElementById('heartRateList');
-		heartRateList.innerHTML = '';
+		const paiEarnedList = document.getElementById('paiEarnedList');
+		paiEarnedList.innerHTML = '';
 
 		// Add column names
 		const header = document.createElement('div');
 		header.className = 'heartRateListHeader';
-		header.innerHTML = '<div>Heart Rate</div><div>Date & Time</div><div>Action</div>';
-		heartRateList.appendChild(header);
+		header.innerHTML = '<div>PAI Earned</div><div>Date & Time</div><div>Action</div>';
+		paiEarnedList.appendChild(header);
 
-		if (this.heartRateChart.heartRateData.length === 0) {
+		if (this.paiEarnedLineChart.paiEarnedData.length === 0) {
 			return;
 		}
 
 		// Add data items
-		this.heartRateChart.heartRateData.forEach((data, index) => {
+		this.paiEarnedLineChart.paiEarnedData.forEach((data, index) => {
 			const item = document.createElement('div');
 			item.className = 'heartRateItem';
-			const formattedDateTime = this.heartRateChart.formatDateTimeWithSeconds(data.time);
+			const formattedDateTime = this.paiEarnedLineChart.formatDateTimeWithSeconds(data.time);
 			item.innerHTML = `<div>${data.hr}</div><div>${formattedDateTime}</div>`;
 
 			// Add delete button
@@ -141,7 +151,8 @@ export class TileHeartRateLineChartUI {
 			deleteButton.textContent = 'Delete';
 			deleteButton.onclick = () => this.deleteDataClick(index);
 			item.appendChild(deleteButton);
-			heartRateList.appendChild(item);
+
+			paiEarnedList.appendChild(item);
 		});
 	}
 
@@ -152,27 +163,32 @@ export class TileHeartRateLineChartUI {
 
 		if (min === '' || max === '' || lengthValues === '') {
 			alert('Please enter correct values.');
-		} else if (parseInt(max) > this.heartRateChart.thresholds.MAX) {
+		} else if (parseInt(max) > this.paiEarnedLineChart.thresholds.MAX) {
 			alert('Input exceeds max value. Please enter correct values.');
 		} else if (parseInt(min) > parseInt(max)) {
 			alert('Please enter correct values.');
-		} else if (parseInt(min) < this.heartRateChart.thresholds.MIN) {
+		} else if (parseInt(min) < this.paiEarnedLineChart.thresholds.MIN) {
 			alert('Input is below minimum value. Please enter correct values.');
 		} else {
 			const startDate = new Date('2024-01-01T00:00:00');
 			console.log(startDate);
-			this.heartRateChart.generateRandomHRArray(parseInt(lengthValues), parseInt(min), parseInt(max), startDate);
+			this.paiEarnedLineChart.generateRandomHRArray(
+				parseInt(lengthValues),
+				parseInt(min),
+				parseInt(max),
+				startDate
+			);
 			this.updateList();
 			document.getElementById('min').value = '';
 			document.getElementById('max').value = '';
 			document.getElementById('lengthValues').value = '';
 		}
-		this.heartRateChart.updateChart();
+		this.paiEarnedLineChart.updateChart();
 		this.updateList();
 	}
 
 	clearValuesClick() {
-		this.heartRateChart.clearChart();
+		this.paiEarnedLineChart.clearChart();
 		this.updateList();
 	}
 
@@ -181,7 +197,7 @@ export class TileHeartRateLineChartUI {
 		const newMaxValue = parseInt(maxValueInput.value);
 
 		if (!isNaN(newMaxValue)) {
-			this.heartRateChart.setMaxValue(newMaxValue);
+			this.paiEarnedLineChart.setMaxValue(newMaxValue);
 		} else {
 			alert('Please enter a valid number for the max value.');
 		}
@@ -200,16 +216,47 @@ export class TileHeartRateLineChartUI {
 			const high = parseInt(highInput);
 
 			if (!isNaN(low) && !isNaN(moderate) && !isNaN(high) && low <= moderate && moderate <= high) {
-				this.heartRateChart.setThresholds(low, moderate, high);
+				this.paiEarnedLineChart.setThresholds(low, moderate, high);
 			} else {
 				alert('Please enter valid threshold values.');
 			}
 		}
 	}
+
+	setFormatClick() {
+		let formatValue = document.getElementById('timeFormat').value;
+		console.log(formatValue);
+		this.paiEarnedLineChart.setFormat(formatValue);
+	}
+
+	moveLineClick() {
+		const timeInput = document.getElementById('timeLine').value.trim();
+		if (this.paiEarnedLineChart.paiEarnedData.length === 0) {
+			alert('No data in chart.');
+		} else {
+			this.paiEarnedLineChart.moveLine(timeInput);
+		}
+	}
+
+	timeLineIndicatorToggle() {
+		const nowTimeToggle = document.getElementById('nowTimeToggle');
+		if (nowTimeToggle.checked) {
+			this.paiEarnedLineChart.setTimeLineIndicatorToggle(true);
+		} else {
+			this.paiEarnedLineChart.setTimeLineIndicatorToggle(false);
+		}
+	}
+
+	changeLineIndicatorTextClick() {
+		const newLineIndicatorValue = document.getElementById('lineIndicatorInput').value;
+		console.log('New Line Indicator Value:', newLineIndicatorValue);
+		this.paiEarnedLineChart.setLineIndicator(newLineIndicatorValue);
+	}
+
 	// Function to change the connection duration
 	changeConnectDurationClick() {
 		const connectDurationInput = document.getElementById('connectDurationInput').value;
-		this.heartRateChart.setConnectDuration(connectDurationInput);
+		this.paiEarnedLineChart.setConnectDuration(connectDurationInput);
 	}
 
 	connectAllPointsToggle() {
@@ -218,11 +265,11 @@ export class TileHeartRateLineChartUI {
 
 		if (connectAllPoints) {
 			// Perform actions when connecting all points is turned ON
-			this.heartRateChart.setConnectAllPoints(true);
+			this.paiEarnedLineChart.setConnectAllPoints(true);
 			console.log('Connecting all points is ON');
 		} else {
 			// Perform actions when connecting all points is turned OFF
-			this.heartRateChart.setConnectAllPoints(false);
+			this.paiEarnedLineChart.setConnectAllPoints(false);
 			console.log('Connecting all points is OFF');
 		}
 	}
