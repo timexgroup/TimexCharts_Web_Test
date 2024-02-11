@@ -1,4 +1,4 @@
-export class TileHeartRateLineChartUI {
+class TileHeartRateLineChartUI {
 	constructor(heartRateChart) {
 		this.heartRateChart = heartRateChart;
 		this.updateList();
@@ -227,3 +227,11 @@ export class TileHeartRateLineChartUI {
 		}
 	}
 }
+
+// Export both classes for use in other scripts
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { TileHeartRateLineChartUI };
+} else {
+    window.TileHeartRateLineChartUI = TileHeartRateLineChartUI;
+}
+

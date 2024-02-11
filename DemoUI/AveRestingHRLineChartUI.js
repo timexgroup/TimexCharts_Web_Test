@@ -1,4 +1,4 @@
-export class AveRestingHRLineChartUI {
+class AveRestingHRLineChartUI {
 	constructor(aveRestingHRLineChart) {
 		this.aveRestingHRLineChart = aveRestingHRLineChart;
 		this.currentFilter = this.aveRestingHRLineChart.AverageRestingHRFilter.WEEKLY; // default value
@@ -142,4 +142,11 @@ export class AveRestingHRLineChartUI {
 			}
 		}
 	}
+}
+
+// Export both classes for use in other scripts
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { AveRestingHRLineChartUI };
+} else {
+    window.AveRestingHRLineChartUI = AveRestingHRLineChartUI;
 }

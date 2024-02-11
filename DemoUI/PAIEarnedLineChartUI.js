@@ -1,4 +1,4 @@
-export class PAIEarnedLineChartUI {
+class PAIEarnedLineChartUI {
 	constructor(paiEarnedLineChart) {
 		this.paiEarnedLineChart = paiEarnedLineChart;
 		this.updateList();
@@ -274,3 +274,11 @@ export class PAIEarnedLineChartUI {
 		}
 	}
 }
+
+// Export both classes for use in other scripts
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { PAIEarnedLineChartUI };
+} else {
+    window.PAIEarnedLineChartUI = PAIEarnedLineChartUI;
+}
+

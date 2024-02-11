@@ -1,4 +1,4 @@
-export class HeartRateLineChartUI {
+class HeartRateLineChartUI {
 	constructor(heartRateChart) {
 		this.heartRateChart = heartRateChart;
 		this.updateList();
@@ -254,4 +254,11 @@ export class HeartRateLineChartUI {
 			this.heartRateChart.setConnectAllPoints(false);
 		}
 	}
+}
+
+// Export both classes for use in other scripts
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { HeartRateLineChartUI };
+} else {
+    window.HeartRateLineChartUI = HeartRateLineChartUI;
 }
