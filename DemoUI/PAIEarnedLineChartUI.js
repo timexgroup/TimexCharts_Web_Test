@@ -1,3 +1,22 @@
+/*******************************************************************************
+*
+* Copyright (c) 2024 Timex Group USA, Inc.
+*
+* This document is the property of, and contains information proprietary to
+* Timex Group USA, Inc.. It is to be returned upon request. Reproduction by
+* any means, disclosure, or use of its contents for other than the expressed
+* purpose for which it is loaned, without the written consent of Timex Group
+* USA, Inc., is strictly prohibited.
+*
+* File Change History:
+*
+*               02/21/2024 JRD – Created file for Timex Charts Library Javascript
+* 															 project
+*
+*******************************************************************************/
+
+// import HeartRateLineDataModel from "./HeartRateLineDataModel.js";
+
 class PAIEarnedLineChartUI {
 	constructor(paiEarnedLineChart) {
 		this.paiEarnedLineChart = paiEarnedLineChart;
@@ -53,13 +72,8 @@ class PAIEarnedLineChartUI {
 		} else if (parseInt(hrInput) < this.paiEarnedLineChart.thresholds.MIN) {
 			alert('Input is below minimum value. Please enter correct values.');
 		} else {
-			const newData = {
-				hr: hrInput,
-				time: timeInput,
-			};
-			console.log('passing data...');
-			console.log(newData);
-			this.paiEarnedLineChart.addData(newData);
+			
+			this.paiEarnedLineChart.addData(new HeartRateLineDataModel(hrInput, timeInput));
 			// Reset input values
 			document.getElementById('hr').value = '';
 			document.getElementById('time').value = '';
@@ -80,7 +94,7 @@ class PAIEarnedLineChartUI {
 				const [valueStr, timeStr] = line.split(',');
 				const value = valueStr;
 				const time = timeStr;
-				parsedData.push({ hr: value, time: time });
+				parsedData.push(new HeartRateLineDataModel(value, time));
 			});
 			this.paiEarnedLineChart.addMultipleData(parsedData);
 			this.updateList();
@@ -114,7 +128,7 @@ class PAIEarnedLineChartUI {
 				time: newTime,
 			};
 
-			this.paiEarnedLineChart.addData(newData);
+			this.paiEarnedLineChart.addData(new HeartRateLineDataModel(parseInt(hrInput), newTime));
 			this.updateList();
 		}
 	}

@@ -1,3 +1,22 @@
+/*******************************************************************************
+*
+* Copyright (c) 2024 Timex Group USA, Inc.
+*
+* This document is the property of, and contains information proprietary to
+* Timex Group USA, Inc.. It is to be returned upon request. Reproduction by
+* any means, disclosure, or use of its contents for other than the expressed
+* purpose for which it is loaned, without the written consent of Timex Group
+* USA, Inc., is strictly prohibited.
+*
+* File Change History:
+*
+*               02/21/2024 JRD – Created file for Timex Charts Library Javascript
+* 															 project
+*
+*******************************************************************************/
+
+// import AveRestingHRLineChartModel from "./AveRestingHRLineChartModel.js";
+
 class AveRestingHRLineChartUI {
 	constructor(aveRestingHRLineChart) {
 		this.aveRestingHRLineChart = aveRestingHRLineChart;
@@ -31,12 +50,7 @@ class AveRestingHRLineChartUI {
 			return;
 		}
 
-		const newData = {
-			x: dateValue,
-			y: parseInt(hrValue),
-		};
-
-		this.aveRestingHRLineChart.addData(newData, this.currentFilter);
+		this.aveRestingHRLineChart.addData(new AveRestingHRLineChartModel(dateValue, parseInt(hrValue)), this.currentFilter);
 
 		// Clear input fields after adding HR
 		document.getElementById('hr').value = '';
@@ -83,7 +97,7 @@ class AveRestingHRLineChartUI {
 				const [dateStr, valueStr] = line.split(',');
 				const date = dateStr;
 				const value = parseFloat(valueStr);
-				parsedData.push({ x: date, y: value });
+				parsedData.push(new AveRestingHRLineChartModel(date, value));
 			});
 			//console.log('parse data is ' + typeof(parsedData));
 			this.aveRestingHRLineChart.addMultipleData(parsedData, this.currentFilter);
@@ -113,7 +127,7 @@ class AveRestingHRLineChartUI {
 				// Set hours, minutes, seconds, and milliseconds to zero
 				currentDate.setHours(0, 0, 0, 0);
 				const randomY = Math.floor(Math.random() * (parseInt(max) - parseInt(min) + 1)) + parseInt(min); // Random number between 50 and 150
-				dummyData.push({ x: currentDate, y: randomY });
+				dummyData.push(new AveRestingHRLineChartModel(currentDate, randomY));
 			}
 			this.aveRestingHRLineChart.setChartData(dummyData, this.currentFilter);
 		}

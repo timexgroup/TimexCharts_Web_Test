@@ -1,5 +1,25 @@
+/*******************************************************************************
+*
+* Copyright (c) 2024 Timex Group USA, Inc.
+*
+* This document is the property of, and contains information proprietary to
+* Timex Group USA, Inc.. It is to be returned upon request. Reproduction by
+* any means, disclosure, or use of its contents for other than the expressed
+* purpose for which it is loaned, without the written consent of Timex Group
+* USA, Inc., is strictly prohibited.
+*
+* File Change History:
+*
+*               02/21/2024 JRD – Created file for Timex Charts Library Javascript
+* 															 project
+*
+*******************************************************************************/
+
+// import HeartRateLineDataModel from "./HeartRateLineDataModel.js";
+
 class HeartRateLineChartUI {
 	constructor(heartRateChart) {
+		console.log('ATTACH EVENTS!!');
 		this.heartRateChart = heartRateChart;
 		this.updateList();
 	}
@@ -7,9 +27,11 @@ class HeartRateLineChartUI {
 	setUp() {
 		this.attachEventListeners();
 		this.setInitialElementValues();
+
 	}
 
 	attachEventListeners() {
+
 		// Attach event listeners
 		document.getElementById('addDataButton').addEventListener('click', () => this.addData());
 		document.getElementById('generateValuesButton').addEventListener('click', () => this.generateValuesClick());
@@ -44,6 +66,7 @@ class HeartRateLineChartUI {
 	addData() {
 		const hrInput = document.getElementById('hr').value.trim();
 		const timeInput = document.getElementById('time').value.trim();
+		console.log('add data!')
 
 		if (hrInput === '' || timeInput === '') {
 			alert('Please enter correct values.');
@@ -52,11 +75,8 @@ class HeartRateLineChartUI {
 		} else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
 			alert('Input is below minimum value. Please enter correct values.');
 		} else {
-			const newData = {
-				hr: hrInput,
-				time: timeInput,
-			};
-			this.heartRateChart.addData(newData);
+			let heartRateData = new HeartRateLineDataModel(hrInput,timeInput);
+			this.heartRateChart.addData(heartRateData);
 			// Reset input values
 			document.getElementById('hr').value = '';
 			document.getElementById('time').value = '';
@@ -76,7 +96,7 @@ class HeartRateLineChartUI {
 				const [valueStr, timeStr] = line.split(',');
 				const value = valueStr;
 				const time = timeStr;
-				parsedData.push({ hr: value, time: time });
+				parsedData.push(new HeartRateLineDataModel(value,timeStr));
 			});
 			this.heartRateChart.addMultipleData(parsedData);
 			this.updateList();
@@ -105,12 +125,7 @@ class HeartRateLineChartUI {
 			// Increment time based on the interval
 			const newTime = new Date(lastTime.getTime() + intervalValue * 1000);
 
-			const newData = {
-				hr: parseInt(hrInput),
-				time: newTime,
-			};
-
-			this.heartRateChart.addData(newData);
+			this.heartRateChart.addData(new HeartRateLineDataModel(hrInput, newTime));
 			this.updateList();
 		}
 	}
