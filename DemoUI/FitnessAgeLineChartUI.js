@@ -15,9 +15,9 @@
 *
 *******************************************************************************/
 
-import AveRestingHRLineChartModel from "./AveRestingHRLineChartModel.js";
+// import AveRestingHRLineChartModel from "./AveRestingHRLineChartModel.js";
 
-export class FitnessAgeLineChartUI {
+class FitnessAgeLineChartUI {
 	constructor(fitnessAgeLineChart) {
 		this.fitnessAgeLineChart = fitnessAgeLineChart;
 	}
@@ -103,4 +103,11 @@ export class FitnessAgeLineChartUI {
 			listBody.appendChild(row);
 		});
 	}
+}
+
+// Export both classes for use in other scripts
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { FitnessAgeLineChartUI };
+} else {
+    window.FitnessAgeLineChartUI = FitnessAgeLineChartUI;
 }
