@@ -10,268 +10,261 @@
 *
 * File Change History:
 *
-*               02/21/2024 JRD – Created file for Timex Charts Library Javascript
-* 															 project
+*               02/21/2024 JRD – Created file for Timex Charts Library 
+*                                Javascript project
+*               02/28/2024 JRD - Code cleanup - Coding standard practice
+*               02/29/2024 JRD - Add checking for negative values
 *
 *******************************************************************************/
 
 // import HeartRateLineDataModel from "./HeartRateLineDataModel.js";
 
 class HeartRateLineChartUI {
-	constructor(heartRateChart) {
-		console.log('ATTACH EVENTS!!');
-		this.heartRateChart = heartRateChart;
-		this.updateList();
-	}
+    constructor(heartRateChart) {
+        this.heartRateChart = heartRateChart;
+        this.updateList();
+    }
 
-	setUp() {
-		this.attachEventListeners();
-		this.setInitialElementValues();
+    setUp() {
+        this.attachEventListeners();
+        this.setInitialElementValues();        
+    }
 
-	}
+    attachEventListeners() {       
+        document.getElementById('addDataButton').addEventListener('click', () => this.addData());
+        document.getElementById('generateValuesButton').addEventListener('click', () => this.generateValuesClick());
+        document.getElementById('clearValuesButton').addEventListener('click', () => this.clearValuesClick());
+        document.getElementById('addTextDataButton').addEventListener('click', () => this.addTextData());
+        document.getElementById('setMaxValueButton').addEventListener('click', () => this.setMaxValueClick());
+        document.getElementById('setThresholdButton').addEventListener('click', () => this.setThresholdsClick());
+        document.getElementById('applyFormatButton').addEventListener('click', () => this.setFormatClick());
+        document.getElementById('moveLineButton').addEventListener('click', () => this.moveLineClick());
+        document.getElementById('nowTimeToggle').addEventListener('change', () => this.timeLineIndicatorToggle());
+        document.getElementById('changeLineIndicatorButton').addEventListener('click', () => this.changeLineIndicatorTextClick());
+        document.getElementById('addHRButton').addEventListener('click', () => this.addIntervalData());
+        document.getElementById('changeConnectDurationButton').addEventListener('click', () => this.changeConnectDurationClick());
+        document.getElementById('connectAllPointsToggle').addEventListener('change', () => this.connectAllPointsToggle());
+    }
 
-	attachEventListeners() {
+    setInitialElementValues() {
+        document.getElementById('timeFormat').value = this.heartRateChart.is12HourFormat ? '12HR' : '24HR';
+        document.getElementById('connectDurationInput').value = this.heartRateChart.connectDuration;
+        document.getElementById('connectAllPointsToggle').checked = this.heartRateChart.isConnectAllPoints;
+        document.getElementById('nowTimeToggle').checked = this.heartRateChart.isLineIndicatorOn;
+        document.getElementById('lineIndicatorInput').value = this.heartRateChart.lineIndicatorText;
+        document.getElementById('maxValue').value = this.heartRateChart.thresholds.MAX;
+    }
 
-		// Attach event listeners
-		document.getElementById('addDataButton').addEventListener('click', () => this.addData());
-		document.getElementById('generateValuesButton').addEventListener('click', () => this.generateValuesClick());
-		document.getElementById('clearValuesButton').addEventListener('click', () => this.clearValuesClick());
-		document.getElementById('addTextDataButton').addEventListener('click', () => this.addTextData());
-		document.getElementById('setMaxValueButton').addEventListener('click', () => this.setMaxValueClick());
-		document.getElementById('setThresholdButton').addEventListener('click', () => this.setThresholdsClick());
-		document.getElementById('applyFormatButton').addEventListener('click', () => this.setFormatClick());
-		document.getElementById('moveLineButton').addEventListener('click', () => this.moveLineClick());
-		document.getElementById('nowTimeToggle').addEventListener('change', () => this.timeLineIndicatorToggle());
-		document
-			.getElementById('changeLineIndicatorButton')
-			.addEventListener('click', () => this.changeLineIndicatorTextClick());
-		document.getElementById('addHRButton').addEventListener('click', () => this.addIntervalData());
-		document
-			.getElementById('changeConnectDurationButton')
-			.addEventListener('click', () => this.changeConnectDurationClick());
-		document
-			.getElementById('connectAllPointsToggle')
-			.addEventListener('change', () => this.connectAllPointsToggle());
-	}
+    addData() {
+        const hrInput = document.getElementById('hr').value.trim();
+        const timeInput = document.getElementById('time').value.trim();
 
-	setInitialElementValues() {
-		// Load default values to elements
-		document.getElementById('timeFormat').value = this.heartRateChart.hourFormat ? '12HR' : '24HR';
-		document.getElementById('connectDurationInput').value = this.heartRateChart.connectDuration;
-		document.getElementById('connectAllPointsToggle').checked = this.heartRateChart.connectAllPoints;
-		document.getElementById('nowTimeToggle').checked = this.heartRateChart.lineIndicator;
-		document.getElementById('lineIndicatorInput').value = this.heartRateChart.lineIndicatorText;
-	}
+        if (hrInput === '' || timeInput === '') {
+            alert('Please enter correct values.');
+        } else if (parseInt(hrInput) > this.heartRateChart.thresholds.MAX) {
+            alert('Input exceeds max value. Please enter correct values.');
+        } else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
+            alert('Input is below minimum value. Please enter correct values.');
+        } else {
+            let heartRateData = new HeartRateLineDataModel(hrInput,timeInput);
+            this.heartRateChart.addData(heartRateData);
+            // Reset input values
+            document.getElementById('hr').value = '';
+            document.getElementById('time').value = '';
+            this.updateList();
+        }
+    }
 
-	addData() {
-		const hrInput = document.getElementById('hr').value.trim();
-		const timeInput = document.getElementById('time').value.trim();
-		console.log('add data!')
+    addTextData() {
+        const textData = document.getElementById('textData').value.trim();
+        if (textData === '') {
+            alert('Please enter data in the text area.');
+        } else {
+            const lines = textData.split('\n');
+            const parsedData = [];
 
-		if (hrInput === '' || timeInput === '') {
-			alert('Please enter correct values.');
-		} else if (parseInt(hrInput) > this.heartRateChart.thresholds.MAX) {
-			alert('Input exceeds max value. Please enter correct values.');
-		} else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
-			alert('Input is below minimum value. Please enter correct values.');
-		} else {
-			let heartRateData = new HeartRateLineDataModel(hrInput,timeInput);
-			this.heartRateChart.addData(heartRateData);
-			// Reset input values
-			document.getElementById('hr').value = '';
-			document.getElementById('time').value = '';
-			this.updateList();
-		}
-	}
+            lines.forEach((line) => {
+                const [valueStr, timeStr] = line.split(',');
+                const value = valueStr;
+                const time = timeStr;
+                parsedData.push(new HeartRateLineDataModel(value,timeStr));
+            });
+            this.heartRateChart.addMultipleData(parsedData);
+            this.updateList();
+        }
+    }
 
-	addTextData() {
-		const textData = document.getElementById('textData').value.trim();
-		if (textData === '') {
-			alert('Please enter data in the text area.');
-		} else {
-			const lines = textData.split('\n');
-			const parsedData = [];
+    addIntervalData() {
+        const hrInput = document.getElementById('hrInterval').value.trim();
+        const intervalValue = document.getElementById('intervalDropdown').value;
 
-			lines.forEach((line) => {
-				const [valueStr, timeStr] = line.split(',');
-				const value = valueStr;
-				const time = timeStr;
-				parsedData.push(new HeartRateLineDataModel(value,timeStr));
-			});
-			this.heartRateChart.addMultipleData(parsedData);
-			this.updateList();
-		}
-	}
+        if (hrInput === '' || intervalValue === '') {
+            alert('Please enter correct values.');
+        } else if (parseInt(hrInput) > this.heartRateChart.thresholds.MAX) {
+            alert('Input exceeds max value. Please enter correct values.');
+        } else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
+            alert('Input is below minimum value. Please enter correct values.');
+        } else {
+            const startDate = new Date('2024-01-01T00:00:00');
+            // If heartRateData has values, use the last time as the starting point
+            const lastTime =
+                (this.heartRateChart.heartRateData.length > 0) ? this.heartRateChart.heartRateData[this.heartRateChart.heartRateData.length - 1].time : 
+                startDate;
 
-	addIntervalData() {
-		const hrInput = document.getElementById('hrInterval').value.trim();
-		const intervalValue = document.getElementById('intervalDropdown').value;
+            // Increment time based on the interval
+            const newTime = new Date(lastTime.getTime() + intervalValue * 1000);
 
-		if (hrInput === '' || intervalValue === '') {
-			alert('Please enter correct values.');
-		} else if (parseInt(hrInput) > this.heartRateChart.thresholds.MAX) {
-			alert('Input exceeds max value. Please enter correct values.');
-		} else if (parseInt(hrInput) < this.heartRateChart.thresholds.MIN) {
-			alert('Input is below minimum value. Please enter correct values.');
-		} else {
-			const startDate = new Date('2024-01-01T00:00:00');
+            this.heartRateChart.addData(new HeartRateLineDataModel(hrInput, newTime));
+            this.updateList();
+        }
+    }
 
-			// If heartRateData has values, use the last time as the starting point
-			const lastTime =
-				this.heartRateChart.heartRateData.length > 0
-					? this.heartRateChart.heartRateData[this.heartRateChart.heartRateData.length - 1].time
-					: startDate;
+    deleteDataClick(index) {
+        this.heartRateChart.deleteData(index);
+        this.updateList();
+    }
 
-			// Increment time based on the interval
-			const newTime = new Date(lastTime.getTime() + intervalValue * 1000);
+    updateList() {
+        const heartRateList = document.getElementById('heartRateList');
+        heartRateList.innerHTML = '';
 
-			this.heartRateChart.addData(new HeartRateLineDataModel(hrInput, newTime));
-			this.updateList();
-		}
-	}
+        // Add column names
+        const header = document.createElement('div');
+        header.className = 'heartRateListHeader';
+        header.innerHTML = '<div>Heart Rate</div><div>Date & Time</div><div>Action</div>';
+        heartRateList.appendChild(header);
 
-	deleteDataClick(index) {
-		this.heartRateChart.deleteData(index);
-		this.updateList();
-	}
+        if (this.heartRateChart.heartRateData.length === 0) {
+            return;
+        }
 
-	updateList() {
-		const heartRateList = document.getElementById('heartRateList');
-		heartRateList.innerHTML = '';
+        // Add data items
+        this.heartRateChart.heartRateData.forEach((data, index) => {
+            const item = document.createElement('div');
+            item.className = 'heartRateItem';
+            const formattedDateTime = this.heartRateChart.formatDateTimeWithSeconds(data.time);
+            item.innerHTML = `<div>${data.hr}</div><div>${formattedDateTime}</div>`;
 
-		// Add column names
-		const header = document.createElement('div');
-		header.className = 'heartRateListHeader';
-		header.innerHTML = '<div>Heart Rate</div><div>Date & Time</div><div>Action</div>';
-		heartRateList.appendChild(header);
+            // Add delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'deleteButton';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => this.deleteDataClick(index);
+            item.appendChild(deleteButton);
+            heartRateList.appendChild(item);
+        });
+    }
+    generateValuesClick() {
+        const min = document.getElementById('min').value.trim();
+        const max = document.getElementById('max').value.trim();
+        const lengthValues = document.getElementById('lengthValues').value.trim();
 
-		if (this.heartRateChart.heartRateData.length === 0) {
-			return;
-		}
+        if (min === '' || max === '' || lengthValues === '') {
+            alert('Please enter correct values.');
+        } else if (parseInt(max) > this.heartRateChart.thresholds.MAX) {
+            alert('Input exceeds max value. Please enter correct values.');
+        } else if (parseInt(min) > parseInt(max)) {
+            alert('Please enter correct values.');
+        } else if (parseInt(min) < this.heartRateChart.thresholds.MIN) {
+            alert('Input is below minimum value. Please enter correct values.');
+        } else {
+            const startDate = new Date('2024-01-01T00:00:00');
+            this.heartRateChart.generateRandomHRArray(parseInt(lengthValues), parseInt(min), parseInt(max), startDate);
+            this.updateList();
+            document.getElementById('min').value = '';
+            document.getElementById('max').value = '';
+            document.getElementById('lengthValues').value = '';
+        }
+        this.heartRateChart.updateChart();
+        this.updateList();
+    }
 
-		// Add data items
-		this.heartRateChart.heartRateData.forEach((data, index) => {
-			const item = document.createElement('div');
-			item.className = 'heartRateItem';
-			const formattedDateTime = this.heartRateChart.formatDateTimeWithSeconds(data.time);
-			item.innerHTML = `<div>${data.hr}</div><div>${formattedDateTime}</div>`;
+    clearValuesClick() {
+        this.heartRateChart.clearChart();
+        this.updateList();
+    }
 
-			// Add delete button
-			const deleteButton = document.createElement('button');
-			deleteButton.className = 'deleteButton';
-			deleteButton.textContent = 'Delete';
-			deleteButton.onclick = () => this.deleteDataClick(index);
-			item.appendChild(deleteButton);
-			heartRateList.appendChild(item);
-		});
-	}
-	generateValuesClick() {
-		const min = document.getElementById('min').value.trim();
-		const max = document.getElementById('max').value.trim();
-		const lengthValues = document.getElementById('lengthValues').value.trim();
+    setMaxValueClick() {
+        const maxValueInput = document.getElementById('maxValue');
+        const newMaxValue = parseInt(maxValueInput.value);
 
-		if (min === '' || max === '' || lengthValues === '') {
-			alert('Please enter correct values.');
-		} else if (parseInt(max) > this.heartRateChart.thresholds.MAX) {
-			alert('Input exceeds max value. Please enter correct values.');
-		} else if (parseInt(min) > parseInt(max)) {
-			alert('Please enter correct values.');
-		} else if (parseInt(min) < this.heartRateChart.thresholds.MIN) {
-			alert('Input is below minimum value. Please enter correct values.');
-		} else {
-			const startDate = new Date('2024-01-01T00:00:00');
-			this.heartRateChart.generateRandomHRArray(parseInt(lengthValues), parseInt(min), parseInt(max), startDate);
-			this.updateList();
-			document.getElementById('min').value = '';
-			document.getElementById('max').value = '';
-			document.getElementById('lengthValues').value = '';
-		}
-		this.heartRateChart.updateChart();
-		this.updateList();
-	}
+        if (!isNaN(newMaxValue) && 
+            (newMaxValue > 0 && newMaxValue <= this.heartRateChart.thresholds.FIXED_MAX)) {
+                this.heartRateChart.setMaxValue(newMaxValue);
+        } else {
+            alert('Please enter a valid number for the max value.');
+        }
+    }
 
-	clearValuesClick() {
-		this.heartRateChart.clearChart();
-		this.updateList();
-	}
+    setThresholdsClick() {
+        const lowInput = document.getElementById('lowThreshold').value.trim();
+        const moderateInput = document.getElementById('moderateThreshold').value.trim();
+        const highInput = document.getElementById('highThreshold').value.trim();
 
-	setMaxValueClick() {
-		const maxValueInput = document.getElementById('maxValue');
-		const newMaxValue = parseInt(maxValueInput.value);
+        if (lowInput === '' || moderateInput === '' || highInput === '') {
+            alert('Please enter valid threshold values.');
+        } else {
+            const low = parseInt(lowInput);
+            const moderate = parseInt(moderateInput);
+            const high = parseInt(highInput);
 
-		if (!isNaN(newMaxValue)) {
-			this.heartRateChart.setMaxValue(newMaxValue);
-		} else {
-			alert('Please enter a valid number for the max value.');
-		}
-	}
+            if (!isNaN(low) && !isNaN(moderate) && !isNaN(high) && 
+                low <= moderate && 
+                moderate <= high &&
+                low >= 0) {
+                    this.heartRateChart.setThresholds(low, moderate, high);
+            } else {
+                alert('Please enter valid threshold values.');
+            }
+        }
+    }
 
-	setThresholdsClick() {
-		const lowInput = document.getElementById('lowThreshold').value.trim();
-		const moderateInput = document.getElementById('moderateThreshold').value.trim();
-		const highInput = document.getElementById('highThreshold').value.trim();
+    setFormatClick() {
+        let formatValue = document.getElementById('timeFormat').value;
+        this.heartRateChart.setFormat(formatValue);
+    }
 
-		if (lowInput === '' || moderateInput === '' || highInput === '') {
-			alert('Please enter correct values.');
-		} else {
-			const low = parseInt(lowInput);
-			const moderate = parseInt(moderateInput);
-			const high = parseInt(highInput);
+    moveLineClick() {
+        const timeInput = document.getElementById('timeLine').value.trim();
+        if (this.heartRateChart.heartRateData.length === 0) {
+            alert('No data in chart.');
+        } else {
+            this.heartRateChart.moveLine(timeInput);
+        }
+    }
 
-			if (!isNaN(low) && !isNaN(moderate) && !isNaN(high) && low <= moderate && moderate <= high) {
-				this.heartRateChart.setThresholds(low, moderate, high);
-			} else {
-				alert('Please enter valid threshold values.');
-			}
-		}
-	}
+    timeLineIndicatorToggle() {
+        const nowTimeToggle = document.getElementById('nowTimeToggle');
+        if (nowTimeToggle.checked) {
+            this.heartRateChart.setTimeLineIndicatorToggle(true);
+        } else {
+            this.heartRateChart.setTimeLineIndicatorToggle(false);
+        }
+    }
 
-	setFormatClick() {
-		let formatValue = document.getElementById('timeFormat').value;
-		this.heartRateChart.setFormat(formatValue);
-	}
+    changeLineIndicatorTextClick() {
+        const newLineIndicatorValue = document.getElementById('lineIndicatorInput').value;
+        this.heartRateChart.setLineIndicator(newLineIndicatorValue);
+    }
 
-	moveLineClick() {
-		const timeInput = document.getElementById('timeLine').value.trim();
-		if (this.heartRateChart.heartRateData.length === 0) {
-			alert('No data in chart.');
-		} else {
-			this.heartRateChart.moveLine(timeInput);
-		}
-	}
+    changeConnectDurationClick() {
+        const connectDurationInput = document.getElementById('connectDurationInput').value;
+        this.heartRateChart.setConnectDuration(connectDurationInput);
+    }
 
-	timeLineIndicatorToggle() {
-		const nowTimeToggle = document.getElementById('nowTimeToggle');
-		if (nowTimeToggle.checked) {
-			this.heartRateChart.setTimeLineIndicatorToggle(true);
-		} else {
-			this.heartRateChart.setTimeLineIndicatorToggle(false);
-		}
-	}
+    connectAllPointsToggle() {
+        const connectAllPointsToggle = document.getElementById('connectAllPointsToggle');
+        const connectAllPoints = connectAllPointsToggle.checked;
 
-	changeLineIndicatorTextClick() {
-		const newLineIndicatorValue = document.getElementById('lineIndicatorInput').value;
-		this.heartRateChart.setLineIndicator(newLineIndicatorValue);
-	}
-
-	changeConnectDurationClick() {
-		const connectDurationInput = document.getElementById('connectDurationInput').value;
-		this.heartRateChart.setConnectDuration(connectDurationInput);
-	}
-
-	connectAllPointsToggle() {
-		const connectAllPointsToggle = document.getElementById('connectAllPointsToggle');
-		const connectAllPoints = connectAllPointsToggle.checked;
-
-		if (connectAllPoints) {
-			this.heartRateChart.setConnectAllPoints(true);
-		} else {
-			this.heartRateChart.setConnectAllPoints(false);
-		}
-	}
+        if (connectAllPoints) {
+            this.heartRateChart.setConnectAllPoints(true);
+        } else {
+            this.heartRateChart.setConnectAllPoints(false);
+        }
+    }
 }
 
-// Export both classes for use in other scripts
+// Export class for use in other scripts
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = { HeartRateLineChartUI };
 } else {
