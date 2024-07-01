@@ -1281,15 +1281,15 @@ var StepCountBarChart = /*#__PURE__*/function () {
         ctx.fillRect(0, chart.chartArea.bottom, xAxis.width, 30);
         ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
-        ctx.fillText(options.label1, chart.chartArea.left + 30, chart.chartArea.bottom + 15);
-        ctx.fillText(options.label2, xAxis.width / 2, chart.chartArea.bottom + 15);
-        ctx.fillText(options.label3, chart.chartArea.right - 30, chart.chartArea.bottom + 15);
+        ctx.fillText(chart.options.plugins.customXAxisBackground.label1, chart.chartArea.left + 30, chart.chartArea.bottom + 15);
+        ctx.fillText(chart.options.plugins.customXAxisBackground.label2, xAxis.width / 2, chart.chartArea.bottom + 15);
+        ctx.fillText(chart.options.plugins.customXAxisBackground.label3, chart.chartArea.right - 30, chart.chartArea.bottom + 15);
         ctx.restore();
       }
     });
     StepCountBarChart_defineProperty(this, "customCursorTrackerHandler", {
       afterEvent: function afterEvent(chart, args, options) {
-        if (options.enabled === true) {
+        if (chart.options.plugins.customCursorTracker.enabled === true) {
           var ctx = chart.ctx;
           var canvas = chart.canvas;
           var xAxis = chart.scales['x'];
@@ -1342,7 +1342,7 @@ var StepCountBarChart = /*#__PURE__*/function () {
     });
     StepCountBarChart_defineProperty(this, "customToolTipHandler", {
       afterDatasetsDraw: function afterDatasetsDraw(chart, args, options) {
-        if (options.enabled === true) {
+        if (chart.options.plugins.customToolTip.enabled === true) {
           var ctx = chart.ctx;
           var canvas = chart.canvas;
           var xAxis = chart.scales['x'];
@@ -1448,9 +1448,6 @@ var StepCountBarChart = /*#__PURE__*/function () {
           ctx.closePath();
           ctx.stroke();
           ctx.fill();
-
-          // Display tooltip data in case issue is not fixed - Refer to JIRA issue JSCHARTBUG-119
-          console.log("TT data: ".concat(barIndex, " ").concat(stepCount, " ").concat(runningTotalStepCount, " ").concat(_this.runningTotals));
           ctx.font = '24pt';
           ctx.fillStyle = 'white';
           ctx.textAlign = 'left';
@@ -1660,8 +1657,6 @@ var StepCountBarChart = /*#__PURE__*/function () {
   }, {
     key: "setChartData",
     value: function setChartData(stepList) {
-      // Display data in case issue is not fixed - Refer to JIRA issue JSCHARTBUG-119
-      console.log(stepList);
       var stepsArrayFromList = new Array(this.maxIntervalCount).fill(0);
       var index = 0;
       var displaySize = this.displayIntervalCount;
@@ -2358,7 +2353,7 @@ var TileHeartRateLineChart = /*#__PURE__*/function () {
 *******************************************************************************/
 var TimexCharts = {
   NAME: 'Timex JS Charts Library',
-  VERSION: 'vD.1.4.3.1',
+  VERSION: 'vD.1.4.3.3',
   COMPANY: 'Timex Group USA'
 };
 /* harmony default export */ const utils_TimexCharts = (TimexCharts);
